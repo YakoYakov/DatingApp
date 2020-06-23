@@ -43,9 +43,9 @@ namespace DatingApp.API.Data
             return user;
         }
 
-        public Task<bool> UserExists(string username)
+        public async Task<bool> UserExists(string username)
         {
-            return null; // await this.context.Users.FindAsync(u => u.Username == username);
+            return  await this.context.Users.AnyAsync(u => u.Username == username);
         }
 
         private void CreatePasswordHash(string password, out byte[] passwordHash, out byte[] passwordSalt)
