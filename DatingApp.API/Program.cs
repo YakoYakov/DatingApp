@@ -12,23 +12,33 @@ namespace DatingApp.API
     {
         public static void Main(string[] args)
         {
+            // Only Build the host wait it`s execution until the seeding of the database is completed
            var host = CreateHostBuilder(args).Build();
+
            using (var scope = host.Services.CreateScope())
            {
-               var services = scope.ServiceProvider;
+               // Get the services from the scope
+               IServiceProvider services = scope.ServiceProvider;
 
                try
                {
-                   var context = services.GetService<DataContext>();
+                   // Get the datacontext from the services
+                   DataContext context = services.GetService<DataContext>();
+
+                   // Using Migrate() to ensure the database will bi created if it isn`t allready
+                   // And apllying all migrations
                    context.Database.Migrate();
+
+                   // Seed the test data
                    Seed.SeedUsers(context);
                }
                catch (Exception ex)
                {
-                   var logger = services.GetRequiredService<ILogger<Program>>();
+                   ILogger<Program> logger = services.GetRequiredService<ILogger<Program>>();
                    logger.LogError(ex, "An error occured during migration");
                }
 
+               // Finally Run the host
                host.Run();
            }
         }
