@@ -6,7 +6,7 @@ namespace DatingApp.API.Helpers
     //Class that is used to extend whatever the app needed
     public static class Extensions
     {
-        //HttpResponse extensions
+        // HttpResponse extensions
         #region 
         // Add custom Application-Error header and pass it custom error message
         public static void AddApplicationError(this HttpResponse response, string message)
@@ -22,6 +22,9 @@ namespace DatingApp.API.Helpers
         }
         #endregion
 
+        // DateTime extensions
+        #region 
+        // Add CalculateAge method that returns person age basen on his birthday
         public static int CalculateAge(this DateTime theDateTime)
         {
             int age = DateTime.Today.Year - theDateTime.Year;
@@ -32,5 +35,6 @@ namespace DatingApp.API.Helpers
 
             return age;    
         }
+        #endregion
     }
 }
