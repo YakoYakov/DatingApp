@@ -18,15 +18,17 @@ export class MemberDetailComponent implements OnInit {
               private router: ActivatedRoute) { }
 
   ngOnInit() {
-    this.loadUser();
+    this.router.data.subscribe(data => {
+      this.user = data.user;
+    });
   }
 
-  loadUser() {
-    this.userService.getUser(+this.router.snapshot.params.id).subscribe((user: User) => {
-      this.user = user;
-    // tslint:disable-next-line: no-shadowed-variable
-    }, error => {
-      this.alertify.error(error);
-      });
-  }
+  // loadUser() {
+  //   this.userService.getUser(+this.router.snapshot.params.id).subscribe((user: User) => {
+  //     this.user = user;
+  //   // tslint:disable-next-line: no-shadowed-variable
+  //   }, error => {
+  //     this.alertify.error(error);
+  //     });
+  // }
 }
