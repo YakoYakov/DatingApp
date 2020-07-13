@@ -27,7 +27,7 @@ namespace DatingApp.API.Controllers
         [HttpGet]
         public async Task<IActionResult> GetUsers()
         {
-            IEnumerable<User> users = await this.repo.GetUsers();
+            IEnumerable<User> users = await this.repo.GetUsersAsync();
             IEnumerable<ListUsersModel> usersDto = mapper.Map<IEnumerable<ListUsersModel>>(users);
 
             return Ok(usersDto);
@@ -36,7 +36,7 @@ namespace DatingApp.API.Controllers
         [HttpGet("{id}")]
         public async Task<IActionResult> GetUser(int id)
         {
-            User user = await this.repo.GetUser(id);
+            User user = await this.repo.GetUserAsync(id);
             DetailedUserModel userDto = mapper.Map<DetailedUserModel>(user);
 
             return Ok(userDto);
@@ -50,11 +50,11 @@ namespace DatingApp.API.Controllers
                 return Unauthorized();
             }
 
-            User user = await this.repo.GetUser(id);
+            User user = await this.repo.GetUserAsync(id);
 
             this.mapper.Map(model, user);
             
-            if (await this.repo.SaveAll())
+            if (await this.repo.SaveAllAsync())
             {
                 return NoContent();
             }

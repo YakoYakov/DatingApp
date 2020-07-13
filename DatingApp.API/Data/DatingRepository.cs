@@ -23,23 +23,30 @@ namespace DatingApp.API.Data
             this.context.Remove(entity);
         }
 
-        public async Task<User> GetUser(int id)
+        public async Task<User> GetUserAsync(int id)
         {
             User user = await this.context.Users.Include(p => p.Photos).FirstOrDefaultAsync(u => u.Id == id);
 
             return user;
         }
 
-        public async Task<IEnumerable<User>> GetUsers()
+        public async Task<IEnumerable<User>> GetUsersAsync()
         {
             List<User> users = await this.context.Users.Include(p => p.Photos).ToListAsync();
 
             return users;
         }
 
-        public async Task<bool> SaveAll()
+        public async Task<bool> SaveAllAsync()
         {
             return await this.context.SaveChangesAsync() > 0;
+        }
+
+        public async Task<Photo> GetPhotoAsync(int id)
+        {
+            Photo photo = await this.context.Photos.FirstOrDefaultAsync(p => p.Id == id);
+
+            return photo;
         }
     }
 }
