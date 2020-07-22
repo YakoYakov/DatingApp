@@ -8,7 +8,9 @@
         [disabled]="photo.isMain">
             <strong>Main</strong>
       </button>
-      <button type="button" class="btn btn-sm btn-danger ml-2"><i class="fa fa-trash-o"></i></button>
+      <button type="button" class="btn btn-sm btn-danger ml-2" 
+      (click)="deletePhoto(photo.id)"
+      [disabled]="photo.isMain"><i class="fa fa-trash-o"></i></button>
     </div>
   </div>
 </div>

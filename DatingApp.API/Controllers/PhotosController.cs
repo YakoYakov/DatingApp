@@ -107,7 +107,7 @@ namespace DatingApp.API.Controllers
         }
 
         [HttpPost("{id}/setMain")]
-        public async Task<IActionResult> SetMainPhoto (int userId, int Id)
+        public async Task<IActionResult> SetMainPhoto (int userId, int id)
         {
             if (userId != int.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value))
             {
@@ -116,12 +116,12 @@ namespace DatingApp.API.Controllers
 
             User user = await this.repository.GetUserAsync(userId);
 
-            if (!user.Photos.Any(p => p.Id == Id))
+            if (!user.Photos.Any(p => p.Id == id))
             {
                 return Unauthorized();
             }
 
-            Photo photoToBeMain = await this.repository.GetPhotoAsync(Id);
+            Photo photoToBeMain = await this.repository.GetPhotoAsync(id);
 
             if (photoToBeMain.IsMain)
             {
@@ -144,6 +144,52 @@ namespace DatingApp.API.Controllers
             }
 
             return BadRequest("Could not set this photo to be the main photo");
+        }
+
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeletePhoto(int userId, int id)
+        {
+             if (userId != int.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value))
+            {
+                return Unauthorized();
+            }
+
+            User user = await this.repository.GetUserAsync(userId);
+
+            if (!user.Photos.Any(p => p.Id == id))
+            {
+                return Unauthorized();
+            }
+
+            Photo photoToBeDelete = await this.repository.GetPhotoAsync(id);
+
+            if (photoToBeDelete.IsMain)
+            {
+                return BadRequest("You can not delete your main photo!");
+            }
+
+            if (photoToBeDelete.PublicId != null)
+            {
+                DeletionParams deleteParams = new DeletionParams(photoToBeDelete.PublicId);
+
+                DeletionResult result = this.cloudinary.Destroy(deleteParams);
+
+                if (result.Result == "ok")
+                {
+                    this.repository.Delete(photoToBeDelete);
+                }
+            }
+            else 
+            {
+                this.repository.Delete(photoToBeDelete);
+            }
+
+            if (await this.repository.SaveAllAsync())
+            {
+                return Ok();
+            }
+
+            return BadRequest("Failed to delete photo!");
         }
     }
 }
