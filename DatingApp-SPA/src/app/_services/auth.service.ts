@@ -30,15 +30,20 @@ export class AuthService {
         if (user) {
           localStorage.setItem('token', user.token);
           localStorage.setItem('user', JSON.stringify(user.navbarUser));
+          this.currentUser = user.navbarUser;
           this.decodedToken = this.jwtHelper.decodeToken(user.token);
-          this.changeMemberPhoto(this.currentUser.photoUrl);
+          if (this.currentUser.photoUrl) {
+            this.changeMemberPhoto(this.currentUser.photoUrl);
+          } else {
+            this.changeMemberPhoto('../../assets/user.png');
+          }
         }
       })
     );
   }
 
-  register(model: any) {
-    return this.http.post(this.baseUrl + 'register', model);
+  register(user: User) {
+    return this.http.post(this.baseUrl + 'register', user);
   }
 
   loggedIn() {
