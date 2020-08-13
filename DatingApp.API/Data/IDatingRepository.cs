@@ -13,7 +13,7 @@ namespace DatingApp.API.Data
          Task<PagedList<User>> GetUsersAsync(UserParams userParams);
          Task<User> GetUserAsync(int id);
          Task<Photo> GetPhotoAsync(int id);
-
          Task<Photo> GetMainPhotoAsync(int userId);
+         Task<Like> GetLikeAsync(int userId, int recipientId);
     }
 }
