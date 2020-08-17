@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using AutoMapper;
@@ -71,6 +72,25 @@ namespace DatingApp.API.Controllers
             }
 
             throw new Exception("Creating the message failed on save");
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetMessages(int userId, [FromQuery] MessageParams messageParams)
+        {
+            if (userId != int.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value))
+            {
+                return Unauthorized();
+            }
+
+            messageParams.UserId = userId;
+
+            PagedList<Message> messagesFromDb = await this.repo.GetMessagesForUserAsync(messageParams);
+
+            IEnumerable<MessageToReturnViewModel> messages = this.mapper.Map<IEnumerable<MessageToReturnViewModel>>(messagesFromDb);
+
+            Response.AddPagination(messagesFromDb.CurrentPage, messagesFromDb.PageSize, messagesFromDb.TotalCount, messagesFromDb.TotalPages);
+
+            return Ok(messages);
         }
     }
 }
