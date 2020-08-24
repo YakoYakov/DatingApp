@@ -10,11 +10,13 @@ constructor() {
   alertify.set('notifier', 'position', 'bottom-center');
 }
 
-  confirm(message: string, okCallback: () => any) {
-    alertify.confirm(message, (event: any) => {
+  confirm(message: string, okCallback: () => any, title?: string ) {
+    alertify.confirm(title , message, (event: any) => {
       if (event) {
         okCallback();
       } else {}
+    }, () => {
+      alertify.error('Canceled');
     });
   }
 

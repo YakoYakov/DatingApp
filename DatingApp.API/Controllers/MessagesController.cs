@@ -47,7 +47,9 @@ namespace DatingApp.API.Controllers
         [HttpPost]
         public async Task<IActionResult> CreateMessage(int userId, CreateMessageViewModel messageModel)
         {
-            if (userId != int.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value))
+            User sender = await this.repo.GetUserAsync(userId);
+
+            if (sender.Id != int.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value))
             {
                 return Unauthorized();
             }
@@ -67,7 +69,7 @@ namespace DatingApp.API.Controllers
 
             if (await this.repo.SaveAllAsync())
             {
-                CreateMessageViewModel messageToReturn = this.mapper.Map<CreateMessageViewModel>(message);
+                MessageToReturnViewModel messageToReturn = this.mapper.Map<MessageToReturnViewModel>(message);
                 return CreatedAtRoute("GetMessage", new {userId, id = message.Id}, messageToReturn);
             }
 
@@ -106,6 +108,36 @@ namespace DatingApp.API.Controllers
             IEnumerable<MessageToReturnViewModel> messageThread = this.mapper.Map<IEnumerable<MessageToReturnViewModel>>(messagesFromDb);
 
             return Ok(messageThread);
+        }
+
+        [HttpPost("{id}")]
+        public async Task<IActionResult> DeleteMessage(int id, int userId)
+        {
+            if (userId != int.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value))
+            {
+                return Unauthorized();
+            }
+
+            Message messageToDelete = await this.repo.GetMessageAsync(id);
+
+            if (messageToDelete == null)
+                return BadRequest("No such massage to delete was found!");
+
+            if (messageToDelete.SenderId == userId)
+                messageToDelete.SenderDeleted = true;
+
+            if (messageToDelete.RecipientId == userId)
+                messageToDelete.RecipientDeleted = true;
+
+            if (messageToDelete.SenderDeleted && messageToDelete.RecipientDeleted)
+                this.repo.Delete(messageToDelete);
+
+            if (await this.repo.SaveAllAsync())
+            {
+                return NoContent();
+            }
+            
+            throw new Exception("Something went wrong while deleting your message");
         }
     }
 }
