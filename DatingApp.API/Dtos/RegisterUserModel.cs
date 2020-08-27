@@ -34,9 +34,9 @@ namespace DatingApp.API.Dtos
         [Required]
         public string Country { get; set; }
 
-        public DateTime Created { get; set; }
+        public DateTime? Created { get; set; }
 
-        public DateTime LastActive { get; set; }
+        public DateTime? LastActive { get; set; }
 
     }
 }
