@@ -8,6 +8,7 @@ using DatingApp.API.Data;
 using DatingApp.API.Dtos;
 using DatingApp.API.Models;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
@@ -22,9 +23,14 @@ namespace DatingApp.API.Controllers
         private readonly IAuthRepository repo;
         private readonly IConfiguration config;
         private readonly IMapper mapper;
+        private readonly SignInManager<User> signInManager;
+        private readonly UserManager<User> userManager;
 
-        public AuthController(IAuthRepository repo, IConfiguration config, IMapper mapper)
+        public AuthController(IAuthRepository repo, IConfiguration config, IMapper mapper,
+        UserManager<User> userManager, SignInManager<User> signInManager)
         {
+            this.userManager = userManager;
+            this.signInManager = signInManager;
             this.mapper = mapper;
             this.repo = repo;
             this.config = config;
@@ -44,17 +50,35 @@ namespace DatingApp.API.Controllers
 
             DetailedUserModel userToReturn = this.mapper.Map<DetailedUserModel>(createdUser);
 
-            return CreatedAtRoute("GetUser", new {controller = "Users", id = createdUser.Id}, userToReturn);
+            return CreatedAtRoute("GetUser", new { controller = "Users", id = createdUser.Id }, userToReturn);
         }
 
         [HttpPost("login")]
         public async Task<IActionResult> Login(LoginUserModel model)
         {
-            User user = await this.repo.LoginAsync(model.Username.ToLower(), model.Password);
+            User user = await this.userManager.FindByNameAsync(model.Username);
 
             if (user == null)
-                return Unauthorized();
+                return NotFound("Something went wrong");
 
+            Microsoft.AspNetCore.Identity.SignInResult result = await this.signInManager.CheckPasswordSignInAsync(user, model.Password, false);
+
+            if (result.Succeeded)
+            {
+                ListUsersModel navbarUser = mapper.Map<ListUsersModel>(user);
+
+                return Ok(new
+                {
+                    token = GenerateJWTToken(user),
+                    navbarUser
+                });
+            }
+
+            return Unauthorized();
+        }
+
+        private string GenerateJWTToken(User user)
+        {
             Claim[] claims = new[]
             {
                 new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
@@ -77,13 +101,7 @@ namespace DatingApp.API.Controllers
 
             SecurityToken token = tokenHandler.CreateToken(tokenDescriptor);
 
-            ListUsersModel navbarUser = mapper.Map<ListUsersModel>(user);
-
-            return Ok(new
-            {
-                token = tokenHandler.WriteToken(token),
-                navbarUser
-            });
+            return tokenHandler.WriteToken(token);
         }
     }
 }
