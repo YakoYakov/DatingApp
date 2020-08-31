@@ -30,12 +30,15 @@ namespace DatingApp.API
                    // Get the UserManager from the services
                    UserManager<User> userManager = services.GetService<UserManager<User>>();
 
+                   // Get the RoleManager from the services
+                   RoleManager<Role> roleManager = services.GetService<RoleManager<Role>>();
+
                    // Using Migrate() to ensure the database will bi created if it isn`t allready
                    // And apllying all migrations
                    context.Database.Migrate();
 
                    // Seed the test data
-                   Seed.SeedUsers(userManager);
+                   Seed.SeedUsers(userManager, roleManager);
                }
                catch (Exception ex)
                {

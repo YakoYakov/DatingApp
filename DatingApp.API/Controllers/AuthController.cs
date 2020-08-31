@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
@@ -81,13 +82,20 @@ namespace DatingApp.API.Controllers
             return Unauthorized();
         }
 
-        private string GenerateJWTToken(User user)
+        private async Task<string> GenerateJWTToken(User user)
         {
-            Claim[] claims = new[]
+            List<Claim> claims = new List<Claim>
             {
                 new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
                 new Claim(ClaimTypes.Name, user.UserName)
             };
+
+            IList<string> roles = await userManager.GetRolesAsync(user);
+            
+            foreach (var role in roles)
+            {
+                claims.Add(new Claim(ClaimTypes.Role, role));
+            }
 
             SymmetricSecurityKey key = new SymmetricSecurityKey(Encoding.UTF8
                 .GetBytes(this.config.GetSection("AppSettings:Token").Value));
