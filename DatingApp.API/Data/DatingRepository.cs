@@ -39,7 +39,8 @@ namespace DatingApp.API.Data
 
             users = users.Where(u => u.Id != userParams.UserId);
 
-            users = users.Where(u => u.Gender == userParams.Gender);
+            if (!(userParams.Likees || userParams.Likers))
+                users = users.Where(u => u.Gender == userParams.Gender);
 
             if (userParams.Likers)
             {

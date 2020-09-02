@@ -36,7 +36,7 @@ namespace DatingApp.API.Controllers
 
             if (string.IsNullOrEmpty(userParams.Gender))
             {
-                userParams.Gender = userParams.Gender == "male" ? "female" : "male";
+                userParams.Gender = userFromDb.Gender == "male" ? "female" : "male";
             }
             
             PagedList<User> users = await this.repo.GetUsersAsync(userParams);
