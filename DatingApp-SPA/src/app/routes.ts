@@ -27,7 +27,7 @@ export const appRoutes: Routes = [
                  resolve: {user: MemberEditResolver}, canDeactivate: [PreventUnsavedChanges]},
             {path: 'messages', component: MessagesComponent, resolve: {messages: MessagesResolver}},
             {path: 'lists', component: ListsComponent , resolve: {users: ListResolver}},
-            {path: 'admin', component: AdminPanelComponent}
+            {path: 'admin', component: AdminPanelComponent, data: {roles: ['Admin', 'Moderator']}}
         ]
     },
     {path: '**', redirectTo: '', pathMatch: 'full'}
