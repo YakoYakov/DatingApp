@@ -74,7 +74,7 @@ namespace DatingApp.API.Controllers
 
                 return Ok(new
                 {
-                    token = GenerateJWTToken(user),
+                    token = GenerateJWTToken(user).Result,
                     navbarUser
                 });
             }
