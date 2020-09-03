@@ -1,3 +1,12 @@
-<p>
-  photo-management works!
-</p>
+<div class="row">
+  <div class="col-sm-2" *ngFor="let photo of photosForModeration">
+    <img src="{{photo.url}}" class="img-thumbnail p-1" alt="">
+    <div class="text-center">
+      <button type="button" class="btn btn-sm ml-1 btn-success active" 
+        [ngClass]="photo.isMain ? 'btn-success active' : 'btn-secondary'" >
+            <strong>Approve</strong>
+      </button>
+      <button type="button" class="btn btn-sm btn-danger ml-2"><i class="fa fa-trash-o"></i></button>
+    </div>
+  </div>
+</div>
