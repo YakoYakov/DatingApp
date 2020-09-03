@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using AutoMapper;
 using DatingApp.API.Data;
 using DatingApp.API.Dtos;
 using DatingApp.API.Models;
@@ -17,8 +18,10 @@ namespace DatingApp.API.Controllers
     {
         private readonly DataContext context;
         private readonly UserManager<User> userManager;
-        public AdminController(DataContext context, UserManager<User> userManager)
+        private readonly IMapper mapper;
+        public AdminController(DataContext context, UserManager<User> userManager, IMapper mapper)
         {
+            this.mapper = mapper;
             this.userManager = userManager;
             this.context = context;
         }
@@ -57,7 +60,7 @@ namespace DatingApp.API.Controllers
 
             string[] selectedRoles = rolesViewModel.RoleNames;
 
-            selectedRoles = selectedRoles ?? new string[] {};
+            selectedRoles = selectedRoles ?? new string[] { };
 
             IdentityResult addedRolesResult = await this.userManager.AddToRolesAsync(user, selectedRoles.Except(userRoles));
 
@@ -69,15 +72,19 @@ namespace DatingApp.API.Controllers
             if (!removedRolesResult.Succeeded)
                 return BadRequest($"Failed to remove the roles for {userName}");
 
-            return Ok(await this.userManager.GetRolesAsync(user));    
+            return Ok(await this.userManager.GetRolesAsync(user));
         }
 
 
         [Authorize(Policy = "ModeratePhotoRole")]
         [HttpGet("photosForModeration")]
-        public IActionResult GetPhotosForModeration()
+        public async Task<IActionResult> GetPhotosForModeration()
         {
-            return Ok("Admins or moderators can see this");
+            List<Photo> unapprovedPhotosFromDb = await this.context.Photos.Where(p => p.isApproved == false).ToListAsync();
+            
+            var unapprovedPhotosViewModel = this.mapper.Map<PhotoModeratorViewModel[]>(unapprovedPhotosFromDb);
+
+            return Ok(unapprovedPhotosViewModel);
         }
     }
 }
