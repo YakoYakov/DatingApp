@@ -39,4 +39,16 @@ export class PhotoManagementComponent implements OnInit {
       });
     }, 'Mark Photo as inappropriate');
   }
+
+  approvePhoto(id: number) {
+    this.alertify.confirm('This action will permit the user to upload this photo', () => {
+      this.adminService.approvePhoto(id).subscribe(() => {
+        this.photosForModeration.filter(p => p.id === id).map(p => p.isApproved === true);
+        this.getPhotosForModeration();
+        this.alertify.success('Photo was approved');
+      }, () => {
+        this.alertify.error('Failed to mark photo as approved');
+      });
+    }, 'Mark Photo as approved');
+  }
 }

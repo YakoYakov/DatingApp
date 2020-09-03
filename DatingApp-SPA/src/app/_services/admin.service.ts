@@ -26,4 +26,8 @@ export class AdminService {
   disapprovePhoto(id: number) {
     return this.http.delete(this.baseUrl + 'admin/photosForModeration/' + id);
   }
+
+  approvePhoto(id: number) {
+    return this.http.post(this.baseUrl + 'admin/photosForModeration/' + id + '/approve', {});
+  }
 }

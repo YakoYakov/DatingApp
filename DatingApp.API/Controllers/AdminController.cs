@@ -143,5 +143,31 @@ namespace DatingApp.API.Controllers
                 return BadRequest(ex.Message);
             }
         }
+
+        [Authorize(Policy = "ModeratePhotoRole")]
+        [HttpPost("photosForModeration/{id}/approve")]
+        public async Task<IActionResult> ApprovePhoto(int id)
+        {
+
+            Photo photoToBeApprove = await this.context.Photos.FindAsync(id);
+
+            if (photoToBeApprove == null)
+            {
+                return NotFound("Photo not found");
+            }
+
+            photoToBeApprove.isApproved = true;
+         
+            try
+            {
+                await this.context.SaveChangesAsync();
+
+                return NoContent(); 
+            }
+            catch (DbException ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
     }
 }
