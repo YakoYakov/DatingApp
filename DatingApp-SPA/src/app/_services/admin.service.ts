@@ -20,6 +20,10 @@ export class AdminService {
   }
 
   getPhotosForModeration() {
-    return this.http.get(this.baseUrl + 'admin/photosForModeration')
+    return this.http.get(this.baseUrl + 'admin/photosForModeration');
+  }
+
+  disapprovePhoto(id: number) {
+    return this.http.delete(this.baseUrl + 'admin/photosForModeration/' + id);
   }
 }

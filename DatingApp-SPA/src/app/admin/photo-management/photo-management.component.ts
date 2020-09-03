@@ -29,4 +29,14 @@ export class PhotoManagementComponent implements OnInit {
     });
   }
 
+  disapprovePhoto(id: number) {
+    this.alertify.confirm('This action will delete permenently the photo', () => {
+      this.adminService.disapprovePhoto(id).subscribe(() => {
+        this.photosForModeration.splice(this.photosForModeration.findIndex(p => p.id === id), 1);
+        this.alertify.success('Photo was disapproved');
+      }, () => {
+        this.alertify.error('Failed to mark photo as inappropriate');
+      });
+    }, 'Mark Photo as inappropriate');
+  }
 }

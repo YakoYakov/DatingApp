@@ -6,7 +6,7 @@
         [ngClass]="photo.isMain ? 'btn-success active' : 'btn-secondary'" >
             <strong>Approve</strong>
       </button>
-      <button type="button" class="btn btn-sm btn-danger ml-2"><i class="fa fa-trash-o"></i></button>
+      <button type="button" class="btn btn-sm btn-danger ml-2" (click)="disapprovePhoto(photo.id)"><i class="fa fa-trash-o"></i></button>
     </div>
   </div>
 </div>
