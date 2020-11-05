@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using AutoMapper;
@@ -15,7 +16,6 @@ namespace DatingApp.API.Controllers
     [ServiceFilter(typeof(LogUserActivity))]
     [Route("api/[controller]")]
     [ApiController]
-    [Authorize]
     public class UsersController : ControllerBase
     {
         private readonly IDatingRepository repo;
@@ -51,8 +51,17 @@ namespace DatingApp.API.Controllers
         [HttpGet("{id}", Name = "GetUser")]
         public async Task<IActionResult> GetUser(int id)
         {
+            int currentLoggedInUserId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value);
+
             User user = await this.repo.GetUserAsync(id);
+
             DetailedUserModel userDto = mapper.Map<DetailedUserModel>(user);
+
+            if (currentLoggedInUserId != id)
+            {
+                var approvedPhotos = userDto.Photos.Where(p => p.IsApproved).ToList();
+                userDto.Photos = approvedPhotos;
+            }
 
             return Ok(userDto);
         }

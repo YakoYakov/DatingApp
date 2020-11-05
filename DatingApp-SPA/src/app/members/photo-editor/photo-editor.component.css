@@ -2,12 +2,19 @@ img.img-thumbnail {
     height: 100px;
     min-width: 100px !important;
     margin-bottom: 2px;
+    position: relative;
 }
 
-.nv-file-over {
-    border: dotted 3px red;
-}
-
-input[type=file] {
-    color: transparent;
-}
+.img-overlay {
+    position: absolute;
+    top: 0;
+    left: -1;
+    width: 80%;
+    height: 78%;
+    background-color: rgba(128,128,128,0.5);
+    padding-left: 20px;
+    padding-right: 20px;
+    padding-top: 40px;
+  }
+  
+.img-wrapper img {width: 100%;}

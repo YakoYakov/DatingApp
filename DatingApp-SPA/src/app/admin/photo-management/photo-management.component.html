@@ -1,0 +1,22 @@
+<div class="row">
+  <div class="col-sm-2" *ngFor="let photo of photosForModeration">
+
+    <div class="card mb-4">
+      <div class="card-img-wrapper">
+        <img class="card-img-top" src="{{photo.url}}" alt="">
+      </div>
+      <div class="card-body p-1">
+        <h6 class="card-title text-center mb-1"><i class="fa fa-exclamation-triangle"></i>
+        Pending approval since - {{photo.dateAdded | timeAgo}}
+        </h6>
+      </div>
+      <div class="card-footer">
+        <button type="button" class="btn btn-sm btn-success active" (click)="approvePhoto(photo.id)">
+          <strong>Approve</strong>
+        </button>
+        <button type="button" class="btn btn-sm btn-danger ml-2" (click)="disapprovePhoto(photo.id)"><i class="fa fa-trash-o"></i></button>
+      </div>
+    </div>
+
+  </div>
+</div>

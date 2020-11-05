@@ -1,15 +1,15 @@
 using DatingApp.API.Models;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
 namespace DatingApp.API.Data
 {
-    public class DataContext : DbContext
+    public class DataContext : IdentityDbContext<User, Role, int, IdentityUserClaim<int>, UserRole, IdentityUserLogin<int>, IdentityRoleClaim<int>, IdentityUserToken<int>>
     {
         public DataContext(DbContextOptions<DataContext> options) : base(options){ }
 
         public DbSet<Value> Values { get; set; }
-
-        public DbSet<User> Users { get; set; }
 
         public DbSet<Photo> Photos { get; set; }
 
@@ -19,6 +19,23 @@ namespace DatingApp.API.Data
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
+            base.OnModelCreating(builder);
+
+            builder.Entity<UserRole>(userRole => 
+            {
+                userRole.HasKey(ur => new {ur.UserId, ur.RoleId});
+
+                userRole.HasOne(r => r.Role)
+                    .WithMany(ur => ur.UserRoles)
+                    .HasForeignKey(r => r.RoleId)
+                    .IsRequired();
+
+                userRole.HasOne(u => u.User)
+                    .WithMany(ur => ur.UserRoles)
+                    .HasForeignKey(u => u.UserId)
+                    .IsRequired();    
+            });
+
             builder.Entity<Like>()
                 .HasKey(k => new { k.LikeeId, k.LikerId });
 
